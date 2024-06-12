@@ -5,7 +5,7 @@ use std::{
     sync::{LazyLock, Mutex},
 };
 
-use netcorehost::{nethost::load_hostfxr_with_dotnet_root, pdcstr};
+use netcorehost::{nethost::load_hostfxr_with_dotnet_root, pdcstr, hostfxr::Hostfxr};
 
 use crate::{
     debug, environment, icalls,
@@ -47,12 +47,15 @@ pub static IMPORTS: LazyLock<Mutex<HostImports>> = LazyLock::new(|| {
 });
 
 pub fn start() -> Result<(), Box<dyn Error>> {
-    let hostfxr = load_hostfxr_with_dotnet_root(utils::strings::pdcstr(
-        environment::paths::get_base_dir()?
-            .join("MelonLoader")
-            .join("Dependencies")
-            .join("dotnet"),
-    )?)?;
+    let dotnet_path = environment::paths::get_base_dir()?
+        .join("MelonLoader")
+        .join("Dependencies")
+        .join("dotnet");
+
+    #[cfg(target_os = "android")]
+    let hostfxr = Hostfxr::load_from_path("libhostfxr.so")?;
+    #[cfg(not(target_os = "android"))]
+    let hostfxr = load_hostfxr_with_dotnet_root(utils::strings::pdcstr(dotnet_path)?)?;
 
     let runtime_dir = environment::paths::get_base_dir()?
         .join("MelonLoader")
@@ -63,6 +66,9 @@ pub fn start() -> Result<(), Box<dyn Error>> {
         return Err("MelonLoader.Bootstrap.runtimeconfig.json does not exist!".into());
     }
 
+    #[cfg(target_os = "android")]
+    let context = hostfxr.initialize_for_runtime_config_with_dotnet_root(utils::strings::pdcstr(config_path)?, utils::strings::pdcstr(dotnet_path)?)?;
+    #[cfg(not(target_os = "android"))]
     let context = hostfxr.initialize_for_runtime_config(utils::strings::pdcstr(config_path)?)?;
 
     let bootstrap_path = runtime_dir.join("MelonLoader.NativeHost.dll");
