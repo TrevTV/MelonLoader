@@ -168,13 +168,7 @@ namespace MelonLoader
         }
 
         internal static void RunMsgCallbacks(Color namesection_color, Color txt_color, string namesection, string txt)
-        {
-            MsgCallbackHandler?.Invoke(DrawingColorToConsoleColor(namesection_color), DrawingColorToConsoleColor(txt_color), namesection, txt);
-            MsgDrawingCallbackHandler?.Invoke(namesection_color, txt_color, namesection, txt);
-        }
-
-        [Obsolete("MsgCallbackHandler is obsolete. Please use MsgDrawingCallbackHandler for full Color support.")]
-        public static event Action<ConsoleColor, ConsoleColor, string, string> MsgCallbackHandler;
+            => MsgDrawingCallbackHandler?.Invoke(namesection_color, txt_color, namesection, txt);
 
         public static event Action<Color, Color, string, string> MsgDrawingCallbackHandler;
         internal static void RunWarningCallbacks(string namesection, string txt) => WarningCallbackHandler?.Invoke(namesection, txt);
@@ -185,17 +179,9 @@ namespace MelonLoader
         public class Instance
         {
             private string Name = null;
-            [Obsolete("Color is obsolete. Please use DrawingColor for full Color support.")]
-            private ConsoleColor Color
-            {
-                get => DrawingColorToConsoleColor(DrawingColor);
-                set => DrawingColor = ConsoleColorToDrawingColor(value);
-            }
             private Color DrawingColor = DefaultMelonColor;
 
             public Instance(string name) => Name = name?.Replace(" ", "_");
-            [Obsolete("ConsoleColor is obsolete, use the (string, Color) constructor instead.")]
-            public Instance(string name, ConsoleColor color) : this(name) => Color = color;
             public Instance(string name, Color color) : this(name) => DrawingColor = color;
             public void Msg(object obj) => NativeMsg(DrawingColor, DefaultTextColor, Name, obj.ToString());
             public void Msg(string txt) => NativeMsg(DrawingColor, DefaultTextColor, Name, txt);
@@ -317,27 +303,5 @@ namespace MelonLoader
             LatestLogWriter.Close();
             CachedLogWriter.Close();
         }
-
-
-        [Obsolete("Log is obsolete. Please use Msg instead.")]
-        public static void Log(string txt) => Msg(txt);
-        [Obsolete("Log is obsolete. Please use Msg instead.")]
-        public static void Log(string txt, params object[] args) => Msg(txt, args);
-        [Obsolete("Log is obsolete. Please use Msg instead.")]
-        public static void Log(object obj) => Msg(obj);
-        [Obsolete("Log is obsolete. Please use Msg instead.")]
-        public static void Log(ConsoleColor color, string txt) => Msg(color, txt);
-        [Obsolete("Log is obsolete. Please use Msg instead.")]
-        public static void Log(ConsoleColor color, string txt, params object[] args) => Msg(color, txt, args);
-        [Obsolete("Log is obsolete. Please use Msg instead.")]
-        public static void Log(ConsoleColor color, object obj) => Msg(color, obj);
-        [Obsolete("LogWarning is obsolete. Please use Warning instead.")]
-        public static void LogWarning(string txt) => Warning(txt);
-        [Obsolete("LogWarning is obsolete. Please use Warning instead.")]
-        public static void LogWarning(string txt, params object[] args) => Warning(txt, args);
-        [Obsolete("LogError is obsolete. Please use Error instead.")]
-        public static void LogError(string txt) => Error(txt);
-        [Obsolete("LogError is obsolete. Please use Error instead.")]
-        public static void LogError(string txt, params object[] args) => Error(txt, args);
     }
 }

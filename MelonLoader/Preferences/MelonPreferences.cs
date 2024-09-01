@@ -187,11 +187,6 @@ namespace MelonLoader
 
         public static MelonPreferences_ReflectiveCategory CreateCategory<T>(string identifier, string display_name = null) where T : new() => MelonPreferences_ReflectiveCategory.Create<T>(identifier, display_name);
 
-        [Obsolete]
-        public static MelonPreferences_Entry CreateEntry<T>(string category_identifier, string entry_identifier,
-            T default_value, string display_name, bool is_hidden)
-            => CreateEntry(category_identifier, entry_identifier, default_value, display_name, null, is_hidden, false, null);
-
         public static MelonPreferences_Entry<T> CreateEntry<T>(string category_identifier, string entry_identifier, T default_value,
             string display_name = null, string description = null, bool is_hidden = false, bool dont_save_default = false,
             ValueValidator validator = null)

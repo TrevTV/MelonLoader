@@ -36,13 +36,7 @@ namespace MelonLoader
 
         public readonly MelonEvent<object, object> OnEntryValueChangedUntyped = new MelonEvent<object, object>();
         protected void FireUntypedValueChanged(object old, object neew)
-        {
-            OnEntryValueChangedUntyped.Invoke(old, neew);
-            OnValueChangedUntyped?.Invoke();
-        }
-
-        [Obsolete("Please use the OnEntryValueChangedUntyped MelonEvent instead.")]
-        public event Action OnValueChangedUntyped;
+            => OnEntryValueChangedUntyped.Invoke(old, neew);
     }
 
     public class MelonPreferences_Entry<T> : MelonPreferences_Entry
@@ -63,7 +57,6 @@ namespace MelonLoader
                 myValue = value;
                 EditedValue = myValue;
                 OnEntryValueChanged.Invoke(old, value);
-                OnValueChanged?.Invoke(old, value);
                 FireUntypedValueChanged(old, value);
             }
         }
@@ -86,9 +79,6 @@ namespace MelonLoader
         public override void ResetToDefault() => Value = DefaultValue;
 
         public readonly MelonEvent<T, T> OnEntryValueChanged = new MelonEvent<T, T>();
-
-        [Obsolete("Please use the OnEntryValueChanged MelonEvent instead.")]
-        public event Action<T, T> OnValueChanged;
 
         public override Type GetReflectedType() => typeof(T);
 

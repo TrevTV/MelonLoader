@@ -71,16 +71,6 @@ namespace MelonLoader
             CurrentDomain = IsGameIl2Cpp() ? MelonPlatformDomainAttribute.CompatibleDomains.IL2CPP : MelonPlatformDomainAttribute.CompatibleDomains.MONO;
         }
 
-        [Obsolete("Use MelonEnvironment.MelonBaseDirectory instead")]
-        public static string BaseDirectory => MelonEnvironment.MelonBaseDirectory;
-        [Obsolete("Use MelonEnvironment.GameRootDirectory instead")]
-        public static string GameDirectory => MelonEnvironment.GameRootDirectory;
-        [Obsolete("Use MelonEnvironment.MelonLoaderDirectory instead")]
-        public static string MelonLoaderDirectory => MelonEnvironment.MelonLoaderDirectory;
-        [Obsolete("Use MelonEnvironment.UserDataDirectory instead")]
-        public static string UserDataDirectory => MelonEnvironment.UserDataDirectory;
-        [Obsolete("Use MelonEnvironment.UserLibsDirectory instead")]
-        public static string UserLibsDirectory => MelonEnvironment.UserLibsDirectory;
         public static MelonPlatformAttribute.CompatiblePlatforms CurrentPlatform { get; private set; }
         public static MelonPlatformDomainAttribute.CompatibleDomains CurrentDomain { get; private set; }
         public static MelonGameAttribute CurrentGameAttribute { get; private set; }
@@ -188,7 +178,7 @@ namespace MelonLoader
             => GetMelonFromAssembly(((MethodBase)StackFrameGetMethod.Invoke(sf, new object[0]))?.DeclaringType?.Assembly);
 
         private static MelonBase GetMelonFromAssembly(Assembly asm)
-            => asm == null ? null : MelonHandler.Plugins.Cast<MelonBase>().FirstOrDefault(x => x.Assembly == asm) ?? MelonHandler.Mods.FirstOrDefault(x => x.Assembly == asm);
+            => asm == null ? null : (MelonBase)MelonPlugin.RegisteredMelons.FirstOrDefault(x => x.MelonAssembly.Assembly == asm) ?? MelonMod.RegisteredMelons.FirstOrDefault(x => x.MelonAssembly.Assembly == asm);
 
         public static string ComputeSimpleSHA256Hash(string filePath)
         {
@@ -435,15 +425,6 @@ namespace MelonLoader
             return classPackage;
         }
 
-        [Obsolete("MelonLoader.MelonUtils.GetUnityVersion() is obsolete. Please use MelonLoader.InternalUtils.UnityInformationHandler.EngineVersion instead.")]
-        public static string GetUnityVersion() => UnityInformationHandler.EngineVersion.ToStringWithoutType();
-        [Obsolete("MelonLoader.MelonUtils.GameDeveloper is obsolete. Please use MelonLoader.InternalUtils.UnityInformationHandler.GameDeveloper instead.")]
-        public static string GameDeveloper { get => UnityInformationHandler.GameDeveloper; }
-        [Obsolete("MelonLoader.MelonUtils.GameName is obsolete. Please use MelonLoader.InternalUtils.UnityInformationHandler.GameName instead.")]
-        public static string GameName { get => UnityInformationHandler.GameName; }
-        [Obsolete("MelonLoader.MelonUtils.GameVersion is obsolete. Please use MelonLoader.InternalUtils.UnityInformationHandler.GameVersion instead.")]
-        public static string GameVersion { get => UnityInformationHandler.GameVersion; }
-
 
         #if !NET6_0
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -459,15 +440,6 @@ namespace MelonLoader
                                           File.Exists(MelonEnvironment.UnityGameDataDirectory + "\\Mono\\libmono.so");
 
         public static bool IsUnderWineOrSteamProton() => WineGetVersion is not null;
-
-        [Obsolete("Use MelonEnvironment.GameExecutablePath instead")]
-        public static string GetApplicationPath() => MelonEnvironment.GameExecutablePath;
-
-        [Obsolete("Use MelonEnvironment.UnityGameDataDirectory instead")]
-        public static string GetGameDataDirectory() => MelonEnvironment.UnityGameDataDirectory;
-
-        [Obsolete("Use MelonEnvironment.MelonManagedDirectory instead")]
-        public static string GetManagedDirectory() => MelonEnvironment.MelonManagedDirectory;
 
         public static void SetConsoleTitle(string title)
         {
@@ -570,19 +542,6 @@ namespace MelonLoader
 
             return $"{versionString}";
         }
-
-        [Obsolete("Use NativeUtils.NativeHook instead")]
-        public static void NativeHookAttach(IntPtr target, IntPtr detour) => BootstrapInterop.NativeHookAttach(target, detour);
-
-        [Obsolete("Use NativeUtils.NativeHook instead")]
-#if NET6_0
-        internal static void NativeHookAttachDirect(IntPtr target, IntPtr detour) => BootstrapInterop.NativeHookAttachDirect(target, detour);
-#else
-        //On mono, NativeHookAttach *is* direct.
-        internal static void NativeHookAttachDirect(IntPtr target, IntPtr detour) => BootstrapInterop.NativeHookAttach(target, detour);
-#endif
-        [Obsolete("Use NativeUtils.NativeHook instead")]
-        public static void NativeHookDetach(IntPtr target, IntPtr detour) => BootstrapInterop.NativeHookDetach(target, detour);
 
 
         //Removing these as they're private so mods shouldn't need them
