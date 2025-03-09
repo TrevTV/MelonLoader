@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -19,7 +19,7 @@ public class LoaderConfig
 
     [TomlProperty("logs")]
     public LogsConfig Logs { get; internal set; } = new();
-    
+
     [TomlProperty("mono_debug_server")]
     public MonoDebugServerConfig MonoDebugServer { get; internal set; } = new();
 
@@ -125,7 +125,7 @@ public class LoaderConfig
         private const string MonoPathSeparatorDescription =
 #if WINDOWS
             "semicolon (;)";
-#elif LINUX
+#elif LINUX || OSX
             "colon (:)";
 #endif
 

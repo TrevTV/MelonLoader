@@ -1,4 +1,4 @@
-﻿using MelonLoader.Logging;
+using MelonLoader.Logging;
 using MelonLoader.Bootstrap.RuntimeHandlers.Il2Cpp;
 using MelonLoader.Bootstrap.RuntimeHandlers.Mono;
 using MelonLoader.Bootstrap.Utils;
@@ -29,6 +29,7 @@ public static class Core
 
     private static bool _runtimeInitialised;
 
+    [System.Runtime.InteropServices.UnmanagedCallersOnly(EntryPoint = "Init")]
     [RequiresDynamicCode("Calls InitConfig")]
     public static void Init(nint moduleHandle)
     {
@@ -37,7 +38,11 @@ public static class Core
         var exePath = Environment.ProcessPath!;
         GameDir = Path.GetDirectoryName(exePath)!;
 
+#if !OSX
         DataDir = Path.Combine(GameDir, Path.GetFileNameWithoutExtension(exePath) + "_Data");
+#else
+        DataDir = Path.Combine(Path.GetDirectoryName(GameDir)!, "Resources", "Data");
+#endif
         if (!Directory.Exists(DataDir))
             return;
 
@@ -176,7 +181,7 @@ public static class Core
 
         if (uint.TryParse(ArgParser.GetValue("melonloader.debugport"), out var debugPort))
             LoaderConfig.Current.MonoDebugServer.DebugPort = debugPort;
-        
+
         var unityVersionOverride = ArgParser.GetValue("melonloader.unityversion");
         if (unityVersionOverride != null)
             LoaderConfig.Current.UnityEngine.VersionOverride = unityVersionOverride;
